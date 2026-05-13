@@ -22,6 +22,7 @@ export type SlopScore = {
 };
 
 const MAX_TOKENS = 900;
+const REQUEST_TIMEOUT_MS = 7_000;
 
 export async function scorePullRequest(
   pr: PullRequestAnalysisContext,
@@ -47,7 +48,11 @@ export async function scorePullRequest(
 
 async function callProvider(provider: LlmProvider, model: string, prompt: string): Promise<string> {
   if (provider === "claude") {
-    const client = new Anthropic({ apiKey: requireApiKey("ANTHROPIC_API_KEY") });
+    const client = new Anthropic({
+      apiKey: requireApiKey("ANTHROPIC_API_KEY"),
+      maxRetries: 0,
+      timeout: REQUEST_TIMEOUT_MS
+    });
     const response = await client.messages.create({
       model,
       max_tokens: MAX_TOKENS,
@@ -59,7 +64,11 @@ async function callProvider(provider: LlmProvider, model: string, prompt: string
   }
 
   if (provider === "openai") {
-    const client = new OpenAI({ apiKey: requireApiKey("OPENAI_API_KEY") });
+    const client = new OpenAI({
+      apiKey: requireApiKey("OPENAI_API_KEY"),
+      maxRetries: 0,
+      timeout: REQUEST_TIMEOUT_MS
+    });
     const response = await client.chat.completions.create({
       model,
       temperature: 0,
