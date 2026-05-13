@@ -1,0 +1,60 @@
+{
+  "repository": "maintainer/queue",
+  "pull_request": {
+    "number": 417,
+    "title": "Preserve retry delay when requeueing failed jobs",
+    "body": "Requeued jobs lost their original retry delay because we rebuilt the payload from defaults. This keeps the persisted delay and adds coverage for the delayed retry path.",
+    "author": "sam-maintains-things",
+    "created_at": "2026-01-08T21:31:00Z",
+    "additions": 74,
+    "deletions": 29,
+    "changed_files": 4
+  },
+  "files": [
+    {
+      "filename": "src/jobs/requeue.ts",
+      "status": "modified",
+      "additions": 23,
+      "deletions": 11,
+      "patch": "@@ -18,9 +18,12 @@ export function buildRequeuePayload(job: FailedJob) {\n- delayMs: DEFAULT_RETRY_DELAY_MS,\n+ delayMs: job.retry.delayMs,\n"
+    },
+    {
+      "filename": "src/jobs/requeue.test.ts",
+      "status": "modified",
+      "additions": 38,
+      "deletions": 12,
+      "patch": "it('preserves retry delay when requeueing failed jobs', () => {\n  const payload = buildRequeuePayload(failedJob({ delayMs: 45000 }));\n  expect(payload.delayMs).toBe(45000);\n});\n"
+    },
+    {
+      "filename": "src/jobs/types.ts",
+      "status": "modified",
+      "additions": 8,
+      "deletions": 5,
+      "patch": "export type RetryPolicy = {\n  delayMs: number;\n  maxAttempts: number;\n};\n"
+    },
+    {
+      "filename": ".changeset/requeue-delay.md",
+      "status": "added",
+      "additions": 5,
+      "deletions": 1,
+      "patch": "Fix delayed retries losing their configured delay after requeue.\n"
+    }
+  ],
+  "commits": [
+    {
+      "sha": "e666666",
+      "message": "preserve retry delay during requeue"
+    },
+    {
+      "sha": "e777777",
+      "message": "cover delayed retry requeue behavior"
+    }
+  ],
+  "author": {
+    "login": "sam-maintains-things",
+    "account_created_at": "2018-06-12T10:40:00Z",
+    "public_repos": 42,
+    "followers": 37,
+    "prior_merged_prs_to_repo": 8
+  }
+}
