@@ -34,7 +34,7 @@ export async function handlePullRequest(context: Context<PullRequestWebhook>): P
 
     const score = await scorePullRequest(prContext, config);
     if (!score) {
-      console.warn("pr-bouncer did not post because scoring returned null", {
+      console.info("pr-bouncer did not post because scoring returned null", {
         repository: prContext.repository,
         pull_number: prContext.pull_request.number,
         provider: config.provider,
@@ -71,7 +71,7 @@ export async function handlePullRequest(context: Context<PullRequestWebhook>): P
       body: formatComment(score)
     });
   } catch (error) {
-    console.warn("pr-bouncer handler failed safe", {
+    console.info("pr-bouncer handler failed safe", {
       repository: context.payload.repository.full_name,
       pull_number: context.payload.pull_request.number,
       error: error instanceof Error ? error.message : String(error)
