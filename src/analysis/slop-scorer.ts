@@ -34,7 +34,17 @@ export async function scorePullRequest(
   });
 
   try {
+    console.info("pr-bouncer calling LLM provider", {
+      provider: config.provider,
+      model: config.model,
+      prompt_chars: prompt.length
+    });
     const text = await callProvider(config.provider, config.model, prompt);
+    console.info("pr-bouncer LLM provider returned", {
+      provider: config.provider,
+      model: config.model,
+      response_chars: text.length
+    });
     return parseScore(text);
   } catch (error) {
     console.info("pr-bouncer scoring failed safe", {
