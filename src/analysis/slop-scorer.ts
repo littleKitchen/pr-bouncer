@@ -35,7 +35,12 @@ export async function scorePullRequest(
   try {
     const text = await callProvider(config.provider, config.model, prompt);
     return parseScore(text);
-  } catch {
+  } catch (error) {
+    console.warn("pr-bouncer scoring failed safe", {
+      provider: config.provider,
+      model: config.model,
+      error: error instanceof Error ? error.message : String(error)
+    });
     return null;
   }
 }
