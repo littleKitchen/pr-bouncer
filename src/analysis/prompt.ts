@@ -36,6 +36,18 @@ IMPORTANT CALIBRATION
 - Prefer concrete evidence: mismatch, hollow tests, generic commits, odd code fit.
 - Be concise. The maintainer wants a triage signal, not a full code review.
 - If evidence is missing, score that dimension cautiously instead of inventing facts.
+- Calibrate for severity, not just count of smells. A tiny PR with a clear mismatch and a
+  hollow test is still usually medium risk unless the patch also touches sensitive code,
+  introduces meaningful breakage, or shows deception across multiple files.
+- Reserve final scores 70+ for PRs that combine several strong signals with real review
+  burden: broad or risky code changes, security/auth/runtime impact, suspicious author
+  signals, misleading commits, or tests that create false confidence around changed code.
+- For small patches (roughly <=15 added lines and <=3 files), keep the final score below
+  60 unless there is concrete evidence of malicious intent, dangerous behavior, or a
+  high-impact subsystem being changed incorrectly.
+- If the PR context itself says it is a demo, sandbox, fixture, or intentional mismatch,
+  treat that as lower maintainer risk. Still score visible hollowness, but do not score it
+  like a deceptive production contribution.
 
 STRICTNESS
 The repository requested strictness="${options.strictness}".
@@ -54,16 +66,22 @@ The final slop_score must equal the weighted sum below, rounded to the nearest i
    Look for LLM-style markers: generic confident prose, excessive or decorative comments,
    suspiciously uniform naming, broad claims with shallow implementation, boilerplate tests,
    and language patterns like "comprehensive", "robust", or "improved" when unsupported.
+   Do not let vocabulary alone drive this dimension above 55; high scores need multiple
+   visible LLM-style markers in both prose and code.
 
 2. description_diff_mismatch, weight ${String(WEIGHTS.description_diff_mismatch)}
    This is the strongest signal. Compare title/body against changed files and patches.
    High score when the PR claims an auth/rendering/parser fix but touches unrelated code,
    when the description promises tests or edge cases not present, or when scope is inflated.
+   A tiny or explicitly demo mismatch can score high on this dimension, but it should not
+   automatically force a high final score.
 
 3. test_coverage_hollowness, weight ${String(WEIGHTS.test_coverage_hollowness)}
    High score for expect(true).toBe(true, CHECK(true), smoke-only tests, tests that never
    call changed code, or "comprehensive tests" that do not assert the new behavior.
    Low score when tests exercise the changed path and at least one meaningful failure mode.
+   Empty tests are a strong smell, but distinguish toy/demo tests from tests that would
+   falsely protect a risky production change.
 
 4. architectural_fit, weight ${String(WEIGHTS.architectural_fit)}
    Judge whether the patch appears to follow local conventions visible in filenames,
@@ -73,6 +91,8 @@ The final slop_score must equal the weighted sum below, rounded to the nearest i
 5. author_engagement_signal, weight ${String(WEIGHTS.author_engagement_signal)}
    Use only public signals provided here: account age, public repos, followers, and prior
    merged PRs to this repo. A new account can raise risk, but this dimension must not dominate.
+   Established authors, signed commits, or obvious maintainer-owned demo repos should score
+   low on this dimension unless there is contrary evidence.
 
 6. commit_message_quality, weight ${String(WEIGHTS.commit_message_quality)}
    High score for generic messages like "fix", "update code", "changes", or messages that

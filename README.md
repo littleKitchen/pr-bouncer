@@ -4,7 +4,7 @@
 
 The AI bouncer for your pull requests. Tells you if a contributor actually understands their own code.
 
-<!-- DEMO GIF -->
+![pr-bouncer demo](./assets/demo.gif)
 
 ## Story
 
@@ -14,6 +14,8 @@ That is not hypothetical. The RPCS3 team publicly asked people to stop sending A
 
 pr-bouncer is a small GitHub App for maintainers. It does not review code for the author. It gives the maintainer a fast triage signal: does this PR look like someone doing the work, or like low-effort AI slop wearing a clean markdown jacket?
 
+It is designed to be self-hosted: you deploy the GitHub App webhook, choose your LLM provider, and bring your own provider API key. pr-bouncer does not run a hosted scoring service.
+
 ## Quick Start
 
 ```bash
@@ -21,7 +23,7 @@ npm install
 npm run dev
 ```
 
-For hosted usage, create a GitHub App and deploy the webhook endpoint. The short path is in [DEPLOY.md](./DEPLOY.md).
+For usage on real repositories, create a GitHub App and deploy the webhook endpoint yourself. The short path is in [DEPLOY.md](./DEPLOY.md).
 
 ## What It Detects
 
