@@ -23,6 +23,7 @@ export type SlopScore = {
 
 const MAX_TOKENS = 900;
 const REQUEST_TIMEOUT_MS = 7_000;
+const SMALL_DEMO_SCORE_CAP = 55;
 
 export async function scorePullRequest(
   pr: PullRequestAnalysisContext,
@@ -45,7 +46,7 @@ export async function scorePullRequest(
       model: config.model,
       response_chars: text.length
     });
-    return parseScore(text);
+    return applyScoreCalibration(parseScore(text), pr);
   } catch (error) {
     console.info("pr-bouncer scoring failed safe", {
       provider: config.provider,
@@ -120,6 +121,33 @@ export function parseScore(text: string): SlopScore {
     },
     rationale: parsed.rationale.slice(0, 4)
   };
+}
+
+export function applyScoreCalibration(score: SlopScore, pr: PullRequestAnalysisContext): SlopScore {
+  if (isSmallDemoPr(pr) && score.slop_score > SMALL_DEMO_SCORE_CAP) {
+    return { ...score, slop_score: SMALL_DEMO_SCORE_CAP };
+  }
+
+  return score;
+}
+
+function isSmallDemoPr(pr: PullRequestAnalysisContext): boolean {
+  return pr.pull_request.additions <= 15 && pr.pull_request.changed_files <= 3 && hasDemoSignal(pr);
+}
+
+function hasDemoSignal(pr: PullRequestAnalysisContext): boolean {
+  const haystack = [
+    pr.repository,
+    pr.pull_request.title,
+    pr.pull_request.body,
+    ...pr.files.map((file) => `${file.filename}\n${file.patch ?? ""}`)
+  ]
+    .join("\n")
+    .toLowerCase();
+
+  return ["demo", "sandbox", "fixture", "intentional mismatch", "calibration"].some((signal) =>
+    haystack.includes(signal)
+  );
 }
 
 function extractJson(text: string): string {

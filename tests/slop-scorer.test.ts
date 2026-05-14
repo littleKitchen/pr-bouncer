@@ -188,6 +188,37 @@ describe("parseScore", () => {
   });
 });
 
+describe("applyScoreCalibration", () => {
+  it("caps tiny demo mismatch PRs below high-risk scores", async () => {
+    const { applyScoreCalibration } = await import("../src/analysis/slop-scorer.js");
+
+    const score = applyScoreCalibration(
+      { ...scoreJson, slop_score: 62 },
+      {
+        ...loadFixture("ambiguous-1.json"),
+        repository: "littleKitchen/pr-bouncer-demo-target",
+        pull_request: {
+          ...loadFixture("ambiguous-1.json").pull_request,
+          body: "This is an intentional mismatch demo for calibration.",
+          additions: 10,
+          changed_files: 3
+        },
+        files: [
+          {
+            filename: "README.md",
+            status: "modified",
+            additions: 2,
+            deletions: 0,
+            patch: "This branch intentionally tests calibration on a demo mismatch."
+          }
+        ]
+      }
+    );
+
+    expect(score.slop_score).toBe(55);
+  });
+});
+
 function loadFixture(name: string): PullRequestAnalysisContext {
   const raw = readFileSync(join(process.cwd(), "tests", "fixtures", name), "utf8");
   return JSON.parse(raw) as PullRequestAnalysisContext;
