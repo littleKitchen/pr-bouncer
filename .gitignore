@@ -8,3 +8,6 @@ coverage/
 .DS_Store
 .wrangler/
 .vercel
+
+# Local Codex handoff notes
+docs/HANDOFF.md
