@@ -25,7 +25,7 @@ openssl rand -base64 32
 ```text
 Contents: Read
 Metadata: Read
-Pull requests: Read
+Pull requests: Read and write
 Issues: Write
 ```
 
@@ -162,7 +162,7 @@ Open another PR or push a new commit to trigger `pull_request.synchronize`.
 - [ ] GitHub App created
 - [ ] Webhook secret saved
 - [ ] Private key downloaded
-- [ ] Permissions set: Contents read, Metadata read, Pull requests read, Issues write
+- [ ] Permissions set: Contents read, Metadata read, Pull requests write, Issues write
 - [ ] Pull request event subscribed
 - [ ] App installed on sandbox repo
 - [ ] Vercel project deployed

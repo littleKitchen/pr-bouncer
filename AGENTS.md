@@ -123,7 +123,7 @@ Final `slop_score = Σ(dimension_score × weight)`, rounded to integer.
 </details>
 
 _This is an automated triage signal, not a verdict. Use your judgment._
-_[pr-bouncer](https://github.com/yourname/pr-bouncer) · 🚪_
+_[pr-bouncer](https://github.com/littleKitchen/pr-bouncer) · 🚪_
 ```
 
 Emoji thresholds: 🟢 0-30, 🟡 31-60, 🟠 61-80, 🔴 81-100.

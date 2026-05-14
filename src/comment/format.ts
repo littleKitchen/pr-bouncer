@@ -1,7 +1,7 @@
 // Renders the maintainer-facing pull request comment.
 import type { SlopScore } from "../analysis/slop-scorer.js";
 
-const REPO_URL = "https://github.com/yourname/pr-bouncer";
+const REPO_URL = "https://github.com/littleKitchen/pr-bouncer";
 
 const DIMENSION_LABELS: Record<keyof SlopScore["dimensions"], string> = {
   ai_generation_likelihood: "AI-generation likelihood",
