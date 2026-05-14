@@ -102,3 +102,5 @@ Those tools help authors ship and iterate. pr-bouncer is maintainer-first. It an
 ## Contributing
 
 PRs are welcome, especially ones that keep the project small, readable, and useful to maintainers. The best contributions improve the prompt, make the rubric sharper, reduce false positives, or make the demo clearer. Please keep the bouncer lean.
+
+When changing scoring behavior, add or update calibration cases in [docs/CALIBRATION.md](./docs/CALIBRATION.md) so accuracy improves against examples instead of vibes.

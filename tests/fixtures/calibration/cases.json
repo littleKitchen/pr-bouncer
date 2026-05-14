@@ -1,0 +1,172 @@
+[
+  {
+    "id": "tiny-demo-mismatch",
+    "expected": { "min": 35, "max": 45 },
+    "modelScore": {
+      "slop_score": 62,
+      "dimensions": {
+        "ai_generation_likelihood": 68,
+        "description_diff_mismatch": 75,
+        "test_coverage_hollowness": 85,
+        "architectural_fit": 35,
+        "author_engagement_signal": 25,
+        "commit_message_quality": 50
+      },
+      "rationale": [
+        "PR claims complete session hardening, but only adds a tiny audit helper and an empty test."
+      ]
+    },
+    "pr": {
+      "repository": "littleKitchen/pr-bouncer-demo-target",
+      "pull_request": {
+        "number": 2,
+        "title": "Harden session validation and add complete security tests",
+        "body": "This comprehensively hardens session validation. This branch intentionally tests pr-bouncer calibration on a small mismatched PR.",
+        "author": "littleKitchen",
+        "created_at": "2026-05-14T03:12:00Z",
+        "additions": 10,
+        "deletions": 0,
+        "changed_files": 3
+      },
+      "files": [
+        {
+          "filename": "README.md",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 0,
+          "patch": "This branch intentionally tests pr-bouncer's calibration on a small mismatched PR."
+        },
+        {
+          "filename": "src/audit.ts",
+          "status": "added",
+          "additions": 4,
+          "deletions": 0,
+          "patch": "export function writeAuditNote(message: string): string {\n  return `[audit] ${message}`;\n}"
+        },
+        {
+          "filename": "tests/auth.test.ts",
+          "status": "modified",
+          "additions": 4,
+          "deletions": 0,
+          "patch": "it('fully validates session security hardening', () => {\n  expect(true).toBe(true);\n});"
+        }
+      ],
+      "commits": [{ "sha": "0ca55ac", "message": "Add calibrated mismatch demo" }],
+      "author": {
+        "login": "littleKitchen",
+        "account_created_at": "2019-10-19T00:00:00Z",
+        "public_repos": 42,
+        "followers": 0,
+        "prior_merged_prs_to_repo": null
+      }
+    }
+  },
+  {
+    "id": "real-security-hollow-test",
+    "expected": { "min": 70, "max": 90 },
+    "modelScore": {
+      "slop_score": 82,
+      "dimensions": {
+        "ai_generation_likelihood": 70,
+        "description_diff_mismatch": 90,
+        "test_coverage_hollowness": 95,
+        "architectural_fit": 65,
+        "author_engagement_signal": 45,
+        "commit_message_quality": 70
+      },
+      "rationale": [
+        "PR claims auth bypass hardening, but changes unrelated middleware and adds stub tests."
+      ]
+    },
+    "pr": {
+      "repository": "acme/payments-api",
+      "pull_request": {
+        "number": 811,
+        "title": "Fix admin auth bypass and add edge case tests",
+        "body": "Fixes a critical admin auth bypass and adds comprehensive regression tests.",
+        "author": "driveby-fix-17",
+        "created_at": "2026-05-01T12:00:00Z",
+        "additions": 64,
+        "deletions": 18,
+        "changed_files": 5
+      },
+      "files": [
+        {
+          "filename": "src/middleware/logging.ts",
+          "status": "modified",
+          "additions": 40,
+          "deletions": 8,
+          "patch": "// Improve robust auth performance\nconsole.log('request')"
+        },
+        {
+          "filename": "tests/auth-bypass.test.ts",
+          "status": "added",
+          "additions": 24,
+          "deletions": 0,
+          "patch": "it('covers admin bypass', () => {\n  expect(true).toBe(true);\n});"
+        }
+      ],
+      "commits": [{ "sha": "bad111", "message": "fix stuff" }],
+      "author": {
+        "login": "driveby-fix-17",
+        "account_created_at": "2026-04-29T08:00:00Z",
+        "public_repos": 0,
+        "followers": 0,
+        "prior_merged_prs_to_repo": 0
+      }
+    }
+  },
+  {
+    "id": "new-contributor-good-fix",
+    "expected": { "min": 10, "max": 30 },
+    "modelScore": {
+      "slop_score": 22,
+      "dimensions": {
+        "ai_generation_likelihood": 15,
+        "description_diff_mismatch": 5,
+        "test_coverage_hollowness": 10,
+        "architectural_fit": 20,
+        "author_engagement_signal": 45,
+        "commit_message_quality": 10
+      },
+      "rationale": ["Description matches the code and tests cover the new behavior."]
+    },
+    "pr": {
+      "repository": "smallco/api",
+      "pull_request": {
+        "number": 91,
+        "title": "Handle expired invite tokens",
+        "body": "Expired invite tokens return 500. This returns 410 and adds a regression test.",
+        "author": "new-contributor-lina",
+        "created_at": "2026-02-11T14:05:00Z",
+        "additions": 53,
+        "deletions": 18,
+        "changed_files": 3
+      },
+      "files": [
+        {
+          "filename": "src/routes/invites.ts",
+          "status": "modified",
+          "additions": 21,
+          "deletions": 10,
+          "patch": "if (invite.expiresAt < new Date()) {\n  return res.status(410).json({ error: 'invite_expired' });\n}"
+        },
+        {
+          "filename": "tests/invites.test.ts",
+          "status": "modified",
+          "additions": 27,
+          "deletions": 8,
+          "patch": "expect(res.status).toBe(410);"
+        }
+      ],
+      "commits": [{ "sha": "good555", "message": "return 410 for expired invites" }],
+      "author": {
+        "login": "new-contributor-lina",
+        "account_created_at": "2026-01-30T15:00:00Z",
+        "public_repos": 3,
+        "followers": 1,
+        "prior_merged_prs_to_repo": 0
+      }
+    }
+  }
+]
