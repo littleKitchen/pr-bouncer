@@ -23,7 +23,15 @@ export type SlopScore = {
 
 const MAX_TOKENS = 900;
 const REQUEST_TIMEOUT_MS = 7_000;
-const SMALL_DEMO_SCORE_CAP = 55;
+const SMALL_DEMO_SCORE_CAP = 45;
+const SCORE_WEIGHTS = {
+  ai_generation_likelihood: 0.2,
+  description_diff_mismatch: 0.25,
+  test_coverage_hollowness: 0.2,
+  architectural_fit: 0.15,
+  author_engagement_signal: 0.1,
+  commit_message_quality: 0.1
+} as const satisfies Record<keyof SlopDimensions, number>;
 
 export async function scorePullRequest(
   pr: PullRequestAnalysisContext,
@@ -124,11 +132,49 @@ export function parseScore(text: string): SlopScore {
 }
 
 export function applyScoreCalibration(score: SlopScore, pr: PullRequestAnalysisContext): SlopScore {
-  if (isSmallDemoPr(pr) && score.slop_score > SMALL_DEMO_SCORE_CAP) {
-    return { ...score, slop_score: SMALL_DEMO_SCORE_CAP };
+  if (isSmallDemoPr(pr)) {
+    const dimensions = capDimensions(score.dimensions, {
+      ai_generation_likelihood: 45,
+      description_diff_mismatch: 70,
+      test_coverage_hollowness: 70,
+      architectural_fit: 35,
+      author_engagement_signal: 15,
+      commit_message_quality: 45
+    });
+
+    return {
+      ...score,
+      dimensions,
+      slop_score: Math.min(weightedScore(dimensions), SMALL_DEMO_SCORE_CAP)
+    };
   }
 
   return score;
+}
+
+function capDimensions(
+  dimensions: SlopDimensions,
+  caps: SlopDimensions
+): SlopDimensions {
+  return {
+    ai_generation_likelihood: Math.min(dimensions.ai_generation_likelihood, caps.ai_generation_likelihood),
+    description_diff_mismatch: Math.min(dimensions.description_diff_mismatch, caps.description_diff_mismatch),
+    test_coverage_hollowness: Math.min(dimensions.test_coverage_hollowness, caps.test_coverage_hollowness),
+    architectural_fit: Math.min(dimensions.architectural_fit, caps.architectural_fit),
+    author_engagement_signal: Math.min(dimensions.author_engagement_signal, caps.author_engagement_signal),
+    commit_message_quality: Math.min(dimensions.commit_message_quality, caps.commit_message_quality)
+  };
+}
+
+function weightedScore(dimensions: SlopDimensions): number {
+  return clampScore(
+    dimensions.ai_generation_likelihood * SCORE_WEIGHTS.ai_generation_likelihood +
+      dimensions.description_diff_mismatch * SCORE_WEIGHTS.description_diff_mismatch +
+      dimensions.test_coverage_hollowness * SCORE_WEIGHTS.test_coverage_hollowness +
+      dimensions.architectural_fit * SCORE_WEIGHTS.architectural_fit +
+      dimensions.author_engagement_signal * SCORE_WEIGHTS.author_engagement_signal +
+      dimensions.commit_message_quality * SCORE_WEIGHTS.commit_message_quality
+  );
 }
 
 function isSmallDemoPr(pr: PullRequestAnalysisContext): boolean {

@@ -215,7 +215,9 @@ describe("applyScoreCalibration", () => {
       }
     );
 
-    expect(score.slop_score).toBe(55);
+    expect(score.slop_score).toBe(45);
+    expect(score.dimensions.ai_generation_likelihood).toBe(45);
+    expect(score.dimensions.author_engagement_signal).toBe(15);
   });
 });
 
